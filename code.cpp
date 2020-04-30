@@ -1,29 +1,29 @@
-/*±ØĞëµÄ¿â×é¼ş*/
+/*å¿…é¡»çš„åº“ç»„ä»¶*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>  /*C11ÖĞ¶Ô²¼¶ûÁ¿µÄÖ§³Ö¿â*/
+#include <stdbool.h>  /*C11ä¸­å¯¹å¸ƒå°”é‡çš„æ”¯æŒåº“*/
 
-/*·ûºÅ±äÁ¿¶¨Òå*/
+/*ç¬¦å·å˜é‡å®šä¹‰*/
 
-/*±ß½ç¼«ÖµÀà*/
-#define BOARD_SIZE				8	
-#define MAX_STEP					8
+/*è¾¹ç•Œæå€¼ç±»*/
+#define BOARD_SIZE		8	
+#define MAX_STEP		8
 #define MAX_CHESS_NUM		15
-#define INFINITY_MAX			10000
-#define INFINITY_MIN		   -10000
-/*ÆåÅÌ×´Ì¬Àà*/
-#define MY_CHESS					1
-#define ENEMY_CHESS			2
-#define MY_KING					5
-#define ENEMY_KING				10
-#define EMPTY						0
+#define INFINITY_MAX		10000
+#define INFINITY_MIN		-10000
+/*æ£‹ç›˜çŠ¶æ€ç±»*/
+#define MY_CHESS		1
+#define ENEMY_CHESS		2
+#define MY_KING			5
+#define ENEMY_KING		10
+#define EMPTY			0
 
-#define ME								1
-#define ENEMY						2
+#define ME			1
+#define ENEMY			2
 #define PB PrintBoard()
 
-/*ÃüÁî½á¹¹ÌåÀ¶Í¼*/
+/*å‘½ä»¤ç»“æ„ä½“è“å›¾*/
 struct Command
 {
 	int x[MAX_STEP];
@@ -33,13 +33,13 @@ struct Command
 	int Beta;
 };
 
-/*È«¾Ö±äÁ¿¶¨Òå*/
-int Board[BOARD_SIZE][BOARD_SIZE] = { 0 };		/*ÑİËãÖ÷ÆåÅÌ*/
+/*å…¨å±€å˜é‡å®šä¹‰*/
+int Board[BOARD_SIZE][BOARD_SIZE] = { 0 };		/*æ¼”ç®—ä¸»æ£‹ç›˜*/
 int TempBoard[BOARD_SIZE][BOARD_SIZE] = { 0 };
 int MoveDirect[4][2] = { {1,-1}, {1,1}, {-1,1}, {-1,-1} };
 int JumpDirect[4][2] = { {2,-2}, {2,2}, {-2,2}, {-2,-2} };
-int MyHolder = 0;	/*×Ô¼º³ÖÆåµÄÑÕÉ« 1ÎªºÚ 2Îª°× ÓÀÔ¶×ÔÉÏ¶øÏÂ½ø¹¥*/
-int TotalTurn = 0;	/*¾ÖÊı¼ÆÊıÆ÷ ¼º·½×ÜÊÇÔÚÆæÊı¾ÖĞĞ¶¯*/
+int MyHolder = 0;	/*è‡ªå·±æŒæ£‹çš„é¢œè‰² 1ä¸ºé»‘ 2ä¸ºç™½ æ°¸è¿œè‡ªä¸Šè€Œä¸‹è¿›æ”»*/
+int TotalTurn = 0;	/*å±€æ•°è®¡æ•°å™¨ å·±æ–¹æ€»æ˜¯åœ¨å¥‡æ•°å±€è¡ŒåŠ¨*/
 int MaxSearchDepth = 1;
 struct Command FinalDecision;
 
@@ -54,7 +54,7 @@ int LocationValue[BOARD_SIZE][BOARD_SIZE] = {
 	{9,0,9,0,9,0,9,0},
 };
 
-/*º¯ÊıÉùÃ÷*/
+/*å‡½æ•°å£°æ˜*/
 
 void loop();
 void start();
@@ -76,22 +76,22 @@ int DetectJump(int x, int y, int CurStep,int CountJump, struct Command* const  C
 int max(int a, int b);
 int GetValue();
 
-/*Ö÷³ÌĞò*/
+/*ä¸»ç¨‹åº*/
 int main()
 {
 	loop();
 	return 0;
 }
 
-/*º¯ÊıÌå¶¨Òå*/
+/*å‡½æ•°ä½“å®šä¹‰*/
 
-/*×ÜÈë¿Úº¯Êı*/
+/*æ€»å…¥å£å‡½æ•°*/
 void loop()
 {
 	char SubOrder[6] = { 0 };
 	int Status = 0;
 	struct Command Order = { {0}, {0}, 0 };
-	/*¼ì²âÃüÁîÇ°×º ·ÖÇé¿öÖ´ĞĞ*/
+	/*æ£€æµ‹å‘½ä»¤å‰ç¼€ åˆ†æƒ…å†µæ‰§è¡Œ*/
 	while (true)
 	{
 		memset(SubOrder, 0, sizeof(SubOrder));
@@ -101,10 +101,10 @@ void loop()
 
 		if (!strcmp(SubOrder, "START"))
 		{
-			//´Ë´¦¶ÁÊı 1´ú±í¼º·½Ö´ºÚÆå 2´ú±í¼º·½Ö´°×Æå
+			//æ­¤å¤„è¯»æ•° 1ä»£è¡¨å·±æ–¹æ‰§é»‘æ£‹ 2ä»£è¡¨å·±æ–¹æ‰§ç™½æ£‹
 			scanf_s("%d", &MyHolder);
 			if (MyHolder == 2)
-				TotalTurn = -1;	/*Ê¹¼º·½×ÜÊÇÔÚÆæÊı¾ÖĞĞ¶¯*/
+				TotalTurn = -1;	/*ä½¿å·±æ–¹æ€»æ˜¯åœ¨å¥‡æ•°å±€è¡ŒåŠ¨*/
 			start();
 		}
 		else if (!strcmp(SubOrder, "TURN"))
@@ -133,7 +133,7 @@ void loop()
 	}
 }
 
-/*»ù´¡Ö¸Áîº¯Êı*/
+/*åŸºç¡€æŒ‡ä»¤å‡½æ•°*/
 void start()
 {
 	for (int i = 0; i < 3; i++)
@@ -159,9 +159,9 @@ void turn()
 	memset(&FinalDecision, 0, sizeof(struct Command));
 	FinalDecision.Alpha = INFINITY_MIN;
 	FinalDecision.Beta = INFINITY_MAX;
-	memcpy(TempBoard, Board, sizeof(Board));	/*Ôİ´æ³õÊ¼¾ÖÃæ*/
+	memcpy(TempBoard, Board, sizeof(Board));	/*æš‚å­˜åˆå§‹å±€é¢*/
 	AI();
-	memcpy(Board, TempBoard, sizeof(Board));	/*¸´ÅÌ*/
+	memcpy(Board, TempBoard, sizeof(Board));	/*å¤ç›˜*/
    	place(&FinalDecision);
 
 	RotateOrder(&FinalDecision);
@@ -177,8 +177,8 @@ void place(struct Command* Cmd)
 {
 	for (int i = 1; i < Cmd->StepNum; i++)
 	{
-		/*Ó¦ÓÃ²Ù×÷ ¸üĞÂÆåÅÌ*/
-		if (abs(Cmd->x[i] - Cmd->x[i - 1]) == 2)		/*Ìø³Ô²Ù×÷*/
+		/*åº”ç”¨æ“ä½œ æ›´æ–°æ£‹ç›˜*/
+		if (abs(Cmd->x[i] - Cmd->x[i - 1]) == 2)		/*è·³åƒæ“ä½œ*/
 		{
 			int Midx = (Cmd->x[i] + Cmd->x[i - 1]) / 2, Midy = (Cmd->y[i] + Cmd->y[i - 1]) / 2;
 			Board[Cmd->x[i]][Cmd->y[i]] = Board[Cmd->x[i - 1]][Cmd->y[i - 1]];
@@ -191,7 +191,7 @@ void place(struct Command* Cmd)
 			Board[Cmd->x[i - 1]][Cmd->y[i - 1]] = EMPTY;
 		}
 	}
-	/*ÍõÆå½úÉıÅĞ¶Ï*/
+	/*ç‹æ£‹æ™‹å‡åˆ¤æ–­*/
 	for (int i = 0; i < BOARD_SIZE; i++)
 	{
 		if (Board[0][i] == ENEMY_CHESS)
@@ -206,14 +206,14 @@ void end(int Status)
 	exit(0);
 }
 
-/*¹¦ÄÜÅĞ¶Ïº¯Êı*/
+/*åŠŸèƒ½åˆ¤æ–­å‡½æ•°*/
 
 int max(int a, int b)
 {
 	return a >= b ? a : b;
 }
 
-/*Ô½½çÅĞ¶Ï*/
+/*è¶Šç•Œåˆ¤æ–­*/
 bool InRange(int x,int y)
 {
 	if (x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE)
@@ -221,10 +221,10 @@ bool InRange(int x,int y)
 	else
 		return false;
 }
-/*Ìø³ÔÌõ¼şÊÇ·ñ³ÉÁ¢ÅĞ¶Ï*/
+/*è·³åƒæ¡ä»¶æ˜¯å¦æˆç«‹åˆ¤æ–­*/
 bool CanJump(int x, int y, int Midx, int Midy)
 {
-	if (Board[Midx][Midy] == EMPTY)		/*Íâ²¿ÒÑ¾­È·±£Ä©Î»ÖÃ´æÔÚÇÒ¿ÕÖÃ*/
+	if (Board[Midx][Midy] == EMPTY)		/*å¤–éƒ¨å·²ç»ç¡®ä¿æœ«ä½ç½®å­˜åœ¨ä¸”ç©ºç½®*/
 		return false;
 	else if ((Board[x][y] == MY_CHESS || Board[x][y] == MY_KING) && (Board[Midx][Midy] == ENEMY_CHESS || Board[Midx][Midy] == ENEMY_KING))
 	{
@@ -237,7 +237,7 @@ bool CanJump(int x, int y, int Midx, int Midy)
 	else
 		return false;
 }
-/*¸ù¾İ³Ö·½×ª»»ÃüÁî×ø±ê*/
+/*æ ¹æ®æŒæ–¹è½¬æ¢å‘½ä»¤åæ ‡*/
 void RotateOrder(struct Command* Cmd)
 {
 	if (MyHolder == 1)
@@ -250,9 +250,9 @@ void RotateOrder(struct Command* Cmd)
 	}
 }
 
-/*¹ÀÖµº¯Êı*/
-/*»¹ĞèÒª¼ÓÈë¶ÔÕûÌåµÄÆÀ¹ÀÓë·ÖÎö*/
-/*ÒªÄÜ¹»Ê¹ÍõÆå×ß·¨¸üÁé»îµÄÈ¨ÖØÖµ*/
+/*ä¼°å€¼å‡½æ•°*/
+/*è¿˜éœ€è¦åŠ å…¥å¯¹æ•´ä½“çš„è¯„ä¼°ä¸åˆ†æ*/
+/*è¦èƒ½å¤Ÿä½¿ç‹æ£‹èµ°æ³•æ›´çµæ´»çš„æƒé‡å€¼*/
 int GetValue()
 {
 	int Value = 0;
@@ -277,13 +277,13 @@ int GetValue()
 	return Value;
 }
 
-/*¿ÉĞĞ·½°¸Õì²âº¯Êı*/
-/*¼ì²âÄÜ·ñÒÆ¶¯²¢Éú³É·½°¸*/
+/*å¯è¡Œæ–¹æ¡ˆä¾¦æµ‹å‡½æ•°*/
+/*æ£€æµ‹èƒ½å¦ç§»åŠ¨å¹¶ç”Ÿæˆæ–¹æ¡ˆ*/
 int DetectMove(int x, int y, int CountMove, struct Command * const Cmd)
 {
 	int Newx = 0, Newy = 0, StartDirect = 0,EndDirect = 0;
-	/*Íâ²¿ÒÑ¾­È·±£Î»ÖÃÉÏÈ·±£ÓĞÆå×Ó*/
-	/*È·¶¨Æå×ÓÇ°½ø·½Ïò*/
+	/*å¤–éƒ¨å·²ç»ç¡®ä¿ä½ç½®ä¸Šç¡®ä¿æœ‰æ£‹å­*/
+	/*ç¡®å®šæ£‹å­å‰è¿›æ–¹å‘*/
 	if (Board[x][y] == MY_CHESS)	
 		EndDirect = 2;
 	else if (Board[x][y] == ENEMY_CHESS)
@@ -298,7 +298,7 @@ int DetectMove(int x, int y, int CountMove, struct Command * const Cmd)
 	{
 		Newx = x + MoveDirect[i][0];
 		Newy = y + MoveDirect[i][1];
-		if ( InRange(Newx, Newy) && Board[Newx][Newy] == EMPTY)	/*Èç¹û¿ÉĞĞ¾Í¼ÇÂ¼Ã¿Ò»ÖÖ×Å·¨*/
+		if ( InRange(Newx, Newy) && Board[Newx][Newy] == EMPTY)	/*å¦‚æœå¯è¡Œå°±è®°å½•æ¯ä¸€ç§ç€æ³•*/
 			{
 				Cmd[CountMove].x[0] = x;
 				Cmd[CountMove].y[0] = y;
@@ -311,7 +311,7 @@ int DetectMove(int x, int y, int CountMove, struct Command * const Cmd)
 	return CountMove;
 }
 
-/*¼ì²âÊÇ·ñÄÜÌø³Ô²¢Éú³É·½°¸ µİ¹éµ÷ÓÃ*/
+/*æ£€æµ‹æ˜¯å¦èƒ½è·³åƒå¹¶ç”Ÿæˆæ–¹æ¡ˆ é€’å½’è°ƒç”¨*/
 int DetectJump(int x, int y, int CurStep,int CountJump, struct Command* const Cmd)
 {
 	int Newx = 0, Newy = 0, Midx = 0, Midy = 0;
@@ -323,11 +323,11 @@ int DetectJump(int x, int y, int CurStep,int CountJump, struct Command* const Cm
 		Newy = y + JumpDirect[i][1];
 		Midx = (Newx + x) / 2;
 		Midy = (Newy + y) / 2;
-		/*Èç¹û´æÔÚ¿ÉĞĞ·½°¸*/
+		/*å¦‚æœå­˜åœ¨å¯è¡Œæ–¹æ¡ˆ*/
 		if (InRange(Newx, Newy) && Board[Newx][Newy] == EMPTY && CanJump(x,y,Midx,Midy))
 		{
 			CanDo++;
-			if (CanDo != 1)		/*µ±Ç°½ÚµãÓĞ¶à·Ö²æ ²úÉúĞÂ·½°¸ Ôò½«Ä¿Ç°½ÚµãÇ°µÄÒÑÓĞ²½Öè¸´ÖÆµ½ĞÂ·½°¸ÖĞ*/
+			if (CanDo != 1)		/*å½“å‰èŠ‚ç‚¹æœ‰å¤šåˆ†å‰ äº§ç”Ÿæ–°æ–¹æ¡ˆ åˆ™å°†ç›®å‰èŠ‚ç‚¹å‰çš„å·²æœ‰æ­¥éª¤å¤åˆ¶åˆ°æ–°æ–¹æ¡ˆä¸­*/
 			{
 				memcpy(Cmd[CountJump + 1].x, &Cmd[CountJump].x, CurStep * sizeof(int));
 				memcpy(Cmd[CountJump + 1].y, &Cmd[CountJump].y, CurStep * sizeof(int));
@@ -349,13 +349,13 @@ int DetectJump(int x, int y, int CurStep,int CountJump, struct Command* const Cm
 				Cmd[CountJump].y[CurStep] = Newy;
 				Cmd[CountJump].StepNum++;
 			}
-			/*Ó¦ÓÃÌø³Ô½á¹û*/
+			/*åº”ç”¨è·³åƒç»“æœ*/
 			Board[Newx][Newy] = Board[x][y];
 			TempChess = Board[Midx][Midy];
 			Board[Midx][Midy] = Board[x][y] = EMPTY;
-			/*µİ¹éµ÷ÓÃ*/
+			/*é€’å½’è°ƒç”¨*/
 			CountJump =  DetectJump(Newx, Newy, CurStep + 1, CountJump, Cmd);
-			/*»¹Ô­µ±Ç°Ò»²½Ëù×öµÄ¸ü¸Ä*/
+			/*è¿˜åŸå½“å‰ä¸€æ­¥æ‰€åšçš„æ›´æ”¹*/
 			Board[x][y] = Board[Newx][Newy];
 			Board[Midx][Midy] = TempChess;
 			Board[Newx][Newy] = EMPTY;
@@ -364,7 +364,7 @@ int DetectJump(int x, int y, int CurStep,int CountJump, struct Command* const Cm
 	return CountJump;
 }
 
-/*minimaxÏòÍâ²ã¸¸½Úµã´«µİ±¾²ãÃ¿Ò»·½°¸µÄalpha-beta¹ÀÖµ*/
+/*minimaxå‘å¤–å±‚çˆ¶èŠ‚ç‚¹ä¼ é€’æœ¬å±‚æ¯ä¸€æ–¹æ¡ˆçš„alpha-betaä¼°å€¼*/
 bool ValueUpTrans(struct Command* const SimAction, int Actor, struct Command* const OuterCmd)
 {
 	if (Actor == ME)
@@ -394,8 +394,8 @@ bool ValueUpTrans(struct Command* const SimAction, int Actor, struct Command* co
 	return false;
 }
 
-/*AIº¯Êı*/
-/*×ÜÈë¿ÚAIº¯Êı*/
+/*AIå‡½æ•°*/
+/*æ€»å…¥å£AIå‡½æ•°*/
 void AI()
 {
 	if (TotalTurn < 10)
@@ -413,17 +413,17 @@ void AI()
 	SchemeAI(MaxSearchDepth, ME, &FinalDecision);
 }
 
-/*×ß·¨·½°¸Ê÷Éú³ÉAI*/
-/*µİ¹éµ÷ÓÃ Éú³ÉËÑË÷Ê÷ ´Ó×îÉî²ãÓ¦ÓÃ·ÖÖµÅĞ¶¨minimax-alpha-beta¼ôÖ¦Ëã·¨*/
-/*ActorÓÃÒÔÅĞ¶ÏÆå×ÓÖ´·½ Ö¸ÕëÓÃÒÔÏòÍâ²ã¸¸½Úµã´«µİ·ÖÖ§ÆÀ¼Û·ÖÊı*/
+/*èµ°æ³•æ–¹æ¡ˆæ ‘ç”ŸæˆAI*/
+/*é€’å½’è°ƒç”¨ ç”Ÿæˆæœç´¢æ ‘ ä»æœ€æ·±å±‚åº”ç”¨åˆ†å€¼åˆ¤å®šminimax-alpha-betaå‰ªæç®—æ³•*/
+/*Actorç”¨ä»¥åˆ¤æ–­æ£‹å­æ‰§æ–¹ æŒ‡é’ˆç”¨ä»¥å‘å¤–å±‚çˆ¶èŠ‚ç‚¹ä¼ é€’åˆ†æ”¯è¯„ä»·åˆ†æ•°*/
 void SchemeAI(int Deep, int Actor, struct Command* const OuterCmd) 
 {
 	
-	/*Èôµ½´ïÏŞ¶¨µÄ×îÉî²ãÔò¶ÔÒ¶½Úµã¹ÀÖµ*/
+	/*è‹¥åˆ°è¾¾é™å®šçš„æœ€æ·±å±‚åˆ™å¯¹å¶èŠ‚ç‚¹ä¼°å€¼*/
 	if (Deep == 0 )
 	{
 		int score = GetValue();
-		/*Ò¶½ÚµãÊµ¼ÊÉÏ×öÑ¡ÔñµÄÒ»·½ÓëActorÏà·´*/
+		/*å¶èŠ‚ç‚¹å®é™…ä¸Šåšé€‰æ‹©çš„ä¸€æ–¹ä¸Actorç›¸å*/
 		if (Actor == ENEMY && OuterCmd->Beta >= score)
 		{
 			OuterCmd->Beta = score;
@@ -438,9 +438,9 @@ void SchemeAI(int Deep, int Actor, struct Command* const OuterCmd)
 		int CountJump = 0, CountMove = 0, BestSchemeNum = 0;
 		int InnerTempBoard[BOARD_SIZE][BOARD_SIZE] = { 0 };
 		
-		/*´¢´æµ±Ç°²½µÄËùÓĞÌø³Ô·½°¸*/
+		/*å‚¨å­˜å½“å‰æ­¥çš„æ‰€æœ‰è·³åƒæ–¹æ¡ˆ*/
 		struct Command SimJump[MAX_CHESS_NUM];	
-		for (int i = 0; i < MAX_CHESS_NUM; i++)	/*ÄÚ²¿Ìø³Ô·½°¸³õÊ¼»¯*/
+		for (int i = 0; i < MAX_CHESS_NUM; i++)	/*å†…éƒ¨è·³åƒæ–¹æ¡ˆåˆå§‹åŒ–*/
 		{
 			SimJump[i].StepNum = 0;
 			SimJump[i].Alpha = OuterCmd->Alpha;
@@ -456,24 +456,24 @@ void SchemeAI(int Deep, int Actor, struct Command* const OuterCmd)
 				if (Board[i][j] != EMPTY && Board[i][j] & Actor)
 				{
 					CountJump = DetectJump(i, j, 1, CountJump, SimJump);
-					if (SimJump[CountJump].StepNum != 0)	/*·ÀÖ¹¼ÆÊıÆ÷´íÎ»ÖØ¸´Ğ´Èë*/
+					if (SimJump[CountJump].StepNum != 0)	/*é˜²æ­¢è®¡æ•°å™¨é”™ä½é‡å¤å†™å…¥*/
 						CountJump++;
 				}
 			}
 		}
 
-		if (CountJump != 0)			/*ÄÜÌøÔòÌø*/
+		if (CountJump != 0)			/*èƒ½è·³åˆ™è·³*/
 		{
 			int MaxJumpNum = 0;
 			memcpy(InnerTempBoard, Board, sizeof(Board));
-			for (int i = 0; i < CountJump; i++)		/*½öÑ¡Ôñ²½Êı×î¶àµÄÌø³Ô¼ì²â*/
+			for (int i = 0; i < CountJump; i++)		/*ä»…é€‰æ‹©æ­¥æ•°æœ€å¤šçš„è·³åƒæ£€æµ‹*/
 			{
 				MaxJumpNum = max(MaxJumpNum, SimJump[i].StepNum);
 			}
 			
 			for (int i = 0; i < CountJump; i++)
 			{
-				if (OuterCmd->Beta < OuterCmd->Alpha)		/*¼ôÖ¦Ìõ¼şÂú×ã ²»ÔÙ¶ÔºóĞøÔ¤²â·½°¸¼ì²â*/
+				if (OuterCmd->Beta < OuterCmd->Alpha)		/*å‰ªææ¡ä»¶æ»¡è¶³ ä¸å†å¯¹åç»­é¢„æµ‹æ–¹æ¡ˆæ£€æµ‹*/
 				{
 					break;
 				}
@@ -516,7 +516,7 @@ void SchemeAI(int Deep, int Actor, struct Command* const OuterCmd)
 		}
 		else
 		{
-			/*´¢´æµ±Ç°²½µÄËùÓĞÒÆ¶¯·½°¸ ¸Ã´¦½á¹¹ÌåÊı×éÈİÁ¿Ì«Ğ¡Ò×Ôì³É¶ÑËğ»Ù Ì«´óÒ×Ôì³É¶ÑÒç³ö*/
+			/*å‚¨å­˜å½“å‰æ­¥çš„æ‰€æœ‰ç§»åŠ¨æ–¹æ¡ˆ è¯¥å¤„ç»“æ„ä½“æ•°ç»„å®¹é‡å¤ªå°æ˜“é€ æˆå †æŸæ¯ å¤ªå¤§æ˜“é€ æˆå †æº¢å‡º*/
 			struct Command SimMove[3*MAX_CHESS_NUM];	
 			for (int i = 0; i < 3*MAX_CHESS_NUM-1; i++)
 			{
@@ -543,7 +543,7 @@ void SchemeAI(int Deep, int Actor, struct Command* const OuterCmd)
 				memcpy(InnerTempBoard, Board, sizeof(Board));
 				for (int i = 0; i < CountMove; i++)
 				{
-					if (OuterCmd->Beta < OuterCmd->Alpha)	/*¼ôÖ¦Ìõ¼şÂú×ã ²»ÔÙ¶ÔºóĞøÔ¤²â·½°¸¼ì²â*/
+					if (OuterCmd->Beta < OuterCmd->Alpha)	/*å‰ªææ¡ä»¶æ»¡è¶³ ä¸å†å¯¹åç»­é¢„æµ‹æ–¹æ¡ˆæ£€æµ‹*/
 					{
 						break;
 					}
@@ -575,7 +575,7 @@ void SchemeAI(int Deep, int Actor, struct Command* const OuterCmd)
 						FinalDecision = SimMove[BestSchemeNum];
 					}
 			}
-			/*ÎŞÂ·¿É×ßÊ±*/
+			/*æ— è·¯å¯èµ°æ—¶*/
 			else
 			{
 				if (Actor == ENEMY)
